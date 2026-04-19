@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold-400: #d4af37;
+  --color-gold-500: #C9A227;
+  --color-gold-600: #b8901b;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: 'Playfair Display', serif;
+}
+
+body {
+  @apply bg-zinc-50 text-zinc-900 font-sans;
+}
+
+.heading-luxury {
+  @apply font-serif text-zinc-900;
+}
+
+.text-gold {
+  @apply text-[#C9A227];
+}
+
+.bg-gold {
+  @apply bg-[#C9A227];
+}
