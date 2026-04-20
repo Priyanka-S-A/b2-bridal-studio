@@ -6,10 +6,12 @@ const ManageProducts = () => {
   const [products, setProducts] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({
+    _id: null,
     name: '',
     price: '',
     category: '',
-    stock: ''
+    stock: '',
+    image: null
   });
 
   const fetchProducts = async () => {
@@ -27,40 +29,47 @@ const ManageProducts = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-
     const token = localStorage.getItem('adminToken');
 
-    const payload = {
-      name: currentProduct.name,
-      category: currentProduct.category,
-      price: Number(currentProduct.price),
-      stock: Number(currentProduct.stock)
-    };
+    const formData = new FormData();
+    formData.append('name', currentProduct.name);
+    formData.append('category', currentProduct.category);
+    formData.append('price', currentProduct.price);
+    formData.append('stock', currentProduct.stock);
+
+    if (currentProduct.image) {
+      formData.append('image', currentProduct.image);
+    }
 
     try {
       if (currentProduct._id) {
-        // UPDATE (same as services)
         await axios.put(
           `http://localhost:5000/api/products/${currentProduct._id}`,
-          payload,
+          formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
-        // CREATE
         await axios.post(
           'http://localhost:5000/api/products',
-          payload,
+          formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       }
 
       setIsEditing(false);
-      setCurrentProduct({ name: '', category: '', price: '', stock: '' });
+      setCurrentProduct({
+        _id: null,
+        name: '',
+        category: '',
+        price: '',
+        stock: '',
+        image: null
+      });
+
       fetchProducts();
 
     } catch (err) {
-      console.error("SAVE ERROR:", err.response || err);
-      alert(err.response?.data?.error || "Save failed");
+      alert("Save failed");
     }
   };
 
@@ -76,33 +85,44 @@ const ManageProducts = () => {
 
       fetchProducts();
     } catch (err) {
-      console.error(err);
       alert("Delete failed");
     }
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold heading-luxury">Manage Products</h2>
+    <div className="p-6 bg-[#fafafa] min-h-screen">
+
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold tracking-wide text-black">
+          Manage Products
+        </h2>
 
         {!isEditing && (
           <button
             onClick={() => {
-              setCurrentProduct({ name: '', category: '', price: '', stock: '' });
+              setCurrentProduct({
+                _id: null,
+                name: '',
+                category: '',
+                price: '',
+                stock: '',
+                image: null
+              });
               setIsEditing(true);
             }}
-            className="bg-black text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gold-500 hover:text-black"
+            className="bg-black text-white px-5 py-2 rounded-xl flex items-center gap-2 hover:bg-[#c9a13b] hover:text-black transition"
           >
             <Plus size={18} /> Add Product
           </button>
         )}
       </div>
 
+      {/* FORM */}
       {isEditing && (
-        <div className="bg-white p-6 rounded-xl shadow border mb-6 max-w-xl">
+        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8 max-w-xl">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold">
+            <h3 className="text-lg font-semibold text-black">
               {currentProduct._id ? "Edit Product" : "Add Product"}
             </h3>
             <button onClick={() => setIsEditing(false)}>
@@ -115,48 +135,57 @@ const ManageProducts = () => {
             <input
               type="text"
               placeholder="Product Name"
-              value={currentProduct.name}
+              value={currentProduct.name || ''}
               onChange={e => setCurrentProduct({ ...currentProduct, name: e.target.value })}
-              className="w-full p-2 border rounded"
+              className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#c9a13b]"
               required
             />
 
             <input
               type="text"
               placeholder="Category"
-              value={currentProduct.category}
+              value={currentProduct.category || ''}
               onChange={e => setCurrentProduct({ ...currentProduct, category: e.target.value })}
-              className="w-full p-2 border rounded"
+              className="w-full p-3 border rounded-lg"
               required
             />
 
             <input
               type="number"
               placeholder="Price"
-              value={currentProduct.price}
+              value={currentProduct.price || ''}
               onChange={e => setCurrentProduct({ ...currentProduct, price: e.target.value })}
-              className="w-full p-2 border rounded"
+              className="w-full p-3 border rounded-lg"
               required
             />
 
             <input
               type="number"
               placeholder="Stock"
-              value={currentProduct.stock}
+              value={currentProduct.stock || ''}
               onChange={e => setCurrentProduct({ ...currentProduct, stock: e.target.value })}
-              className="w-full p-2 border rounded"
+              className="w-full p-3 border rounded-lg"
               required
             />
 
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setCurrentProduct({ ...currentProduct, image: e.target.files[0] })
+              }
+              className="w-full p-2"
+            />
+
             <div className="flex gap-3">
-              <button className="bg-green-500 text-white px-4 py-2 rounded flex items-center gap-2">
+              <button className="bg-[#c9a13b] text-black px-4 py-2 rounded-lg flex items-center gap-2 hover:opacity-90">
                 <Save size={16} /> Save
               </button>
 
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="bg-gray-300 px-4 py-2 rounded"
+                className="bg-gray-200 px-4 py-2 rounded-lg"
               >
                 Cancel
               </button>
@@ -165,47 +194,69 @@ const ManageProducts = () => {
         </div>
       )}
 
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-gray-50 text-sm text-gray-600 uppercase">
-            <th className="p-3">Name</th>
-            <th className="p-3">Category</th>
-            <th className="p-3">Price</th>
-            <th className="p-3">Stock</th>
-            <th className="p-3">Actions</th>
-          </tr>
-        </thead>
+      {/* PRODUCT GRID */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {products.map(p => (
+          <div
+            key={p._id}
+            className="bg-white rounded-2xl shadow hover:shadow-xl transition p-4 border"
+          >
+            <div className="h-48 bg-gray-100 rounded-lg overflow-hidden mb-4">
+              {p.image && (
+                <img
+                  src={p.image}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              )}
+            </div>
 
-        <tbody>
-          {products.map(p => (
-            <tr key={p._id} className="border-b hover:bg-gray-50">
-              <td className="p-3">{p.name}</td>
-              <td className="p-3">{p.category}</td>
-              <td className="p-3">₹{p.price}</td>
-              <td className="p-3">{p.stock}</td>
+            <h3 className="font-semibold text-lg">{p.name}</h3>
 
-              <td className="p-3 flex gap-3">
-                <button
-                  onClick={() => {
-                    setCurrentProduct(p); // ✅ SAME AS SERVICES
-                    setIsEditing(true);
-                  }}
-                  className="text-gray-500 hover:text-gold-500"
-                >
-                  <Edit2 size={16} />
-                </button>
+            <p className="text-sm text-gray-500">{p.category}</p>
 
-                <button
-                  onClick={() => handleDelete(p._id)}
-                  className="text-gray-500 hover:text-red-500"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <div className="flex justify-between items-center mt-3">
+              <span className="text-[#c9a13b] font-bold text-lg">
+                ₹{p.price}
+              </span>
+
+              <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">
+                {p.stock} left
+              </span>
+            </div>
+
+            {/* ✅ FIXED BUTTONS */}
+            <div className="flex justify-end gap-2 mt-4">
+
+              <button
+                onClick={() => {
+                  setCurrentProduct({
+                    _id: p._id,
+                    name: p.name || '',
+                    category: p.category || '',
+                    price: p.price || '',
+                    stock: p.stock || '',
+                    image: null
+                  });
+                  setIsEditing(true);
+                }}
+                className="p-2 rounded-full bg-black text-white hover:bg-[#c9a13b] hover:text-black transition shadow"
+              >
+                <Edit2 size={16} />
+              </button>
+
+              <button
+                onClick={() => handleDelete(p._id)}
+                className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition shadow"
+              >
+                <Trash2 size={16} />
+              </button>
+
+            </div>
+          </div>
+        ))}
+      </div>
+
     </div>
   );
 };
