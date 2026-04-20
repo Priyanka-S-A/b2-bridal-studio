@@ -4,6 +4,10 @@ import { LogOut, LayoutDashboard, Scissors, Receipt } from 'lucide-react';
 import ManageServices from './ManageServices.jsx';
 import ViewBookings from './ViewBookings.jsx';
 import ManageProducts from './ManageProducts.jsx';
+import ManageCourses from './ManageCourses';
+import ManageStock from '../ManageStock';
+import ManageStaff from '../ManageStaff';
+import Attendance from '../Attendance';
 
 
 const AdminDashboard = () => {
@@ -28,18 +32,19 @@ try {
     navigate('/admin-login');
   };
 
- const navItems = [
-  { name: 'Services', path: '/admin/services', icon: Scissors },
-  { name: 'Bookings', path: '/admin/bookings', icon: Receipt },
-  { name: 'Products', path: '/admin/products', icon: LayoutDashboard },
-
-  ...(user?.role === "owner"
-    ? [
-        { name: 'Revenue', path: '/admin/revenue', icon: LayoutDashboard },
-        { name: 'Attendance', path: '/admin/attendance', icon: LayoutDashboard },
-      ]
-    : []),
-];
+const navItems = user?.role === "owner"
+  ? [
+      { name: 'Staff', path: '/admin/staff', icon: LayoutDashboard },
+      { name: 'Attendance', path: '/admin/attendance', icon: LayoutDashboard },
+      { name: 'Revenue', path: '/admin/revenue', icon: LayoutDashboard },
+    ]
+  : [
+      { name: 'Services', path: '/admin/services', icon: Scissors },
+      { name: 'Bookings', path: '/admin/bookings', icon: Receipt },
+      { name: 'Products', path: '/admin/products', icon: LayoutDashboard },
+      { name: 'Courses', path: '/admin/courses', icon: LayoutDashboard },
+      { name: 'Stock', path: '/admin/stock', icon: LayoutDashboard },
+    ];
 
   return (
     <div className="flex h-screen bg-zinc-50 overflow-hidden">
@@ -97,6 +102,10 @@ try {
             <Route path="services" element={<ManageServices />} />
             <Route path="bookings" element={<ViewBookings />} />
             <Route path="products" element={<ManageProducts />} />
+            <Route path="courses" element={<ManageCourses />} />
+            <Route path="stock" element={<ManageStock />} />
+            <Route path="staff" element={<ManageStaff />} />
+            <Route path="attendance" element={<Attendance />} />
           </Routes>
         </main>
       </div>

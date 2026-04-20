@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import { Clock, BookOpen, MessageCircle, MapPin } from 'lucide-react';
+
 
 const COURSE_DATA = {
   beautician: {
@@ -405,8 +407,41 @@ const Courses = () => {
   const { category } = useParams();
   const [selectedBranch, setSelectedBranch] = useState('branch1');
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [dbCourses, setDbCourses] = useState([]);
 
-  const categoryData = category ? COURSE_DATA[category] : null;
+  useEffect(() => {
+  const fetchCourses = async () => {
+    try {
+      const res = await axios.get('http://localhost:5000/api/courses');
+      setDbCourses(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchCourses();
+}, []);
+
+  const categoryData = category
+  ? {
+      title: COURSE_DATA[category]?.title || category,
+
+      courses: [
+        // 🔥 backend courses
+        ...dbCourses
+          .filter(c => c.category.toLowerCase() === category.toLowerCase())
+          .map(c => ({
+            id: c._id,
+            title: c.title,
+            duration: c.duration,
+            learn: c.learnings || []
+          })),
+
+        // 🔥 your existing courses (UNCHANGED)
+        ...(COURSE_DATA[category]?.courses || [])
+      ]
+    }
+  : null;
 
   const handleEnroll = (course) => {
   const userData = localStorage.getItem("user");

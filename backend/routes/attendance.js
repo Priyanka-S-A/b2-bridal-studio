@@ -1,57 +1,40 @@
 const express = require('express');
-const Staff = require('../models/Staff');
-const Attendance = require('../models/Attendance');
-const { verifyToken, verifyRole } = require('../middleware/auth');
-
 const router = express.Router();
+const Attendance = require('../models/Attendance');
 
-// Get all staff (Owner)
-router.get('/staff', verifyToken, verifyRole(['owner']), async (req, res) => {
+
+// ➕ MARK ATTENDANCE
+router.post('/', async (req, res) => {
   try {
-    const staff = await Staff.find();
-    res.json(staff);
+    const attendance = new Attendance(req.body);
+    await attendance.save();
+    res.json(attendance);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Add staff (Owner)
-router.post('/staff', verifyToken, verifyRole(['owner']), async (req, res) => {
+
+// 📥 GET ALL ATTENDANCE
+router.get('/', async (req, res) => {
   try {
-    const newStaff = new Staff(req.body);
-    await newStaff.save();
-    res.status(201).json(newStaff);
+    const data = await Attendance.find().populate('staffId');
+    res.json(data);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
-// Mark attendance (Owner)
-router.post('/mark', verifyToken, verifyRole(['owner']), async (req, res) => {
-  try {
-    const { staffId, checkInTime, checkOutTime, date } = req.body;
-    let record = await Attendance.findOne({ staffId, date: new Date(date) });
-    
-    if (record) {
-      record.checkInTime = checkInTime || record.checkInTime;
-      record.checkOutTime = checkOutTime || record.checkOutTime;
-      await record.save();
-    } else {
-      record = new Attendance({ staffId, date: new Date(date), checkInTime, checkOutTime });
-      await record.save();
-    }
-    
-    res.json(record);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
 
-// Get attendance (Owner)
-router.get('/', verifyToken, verifyRole(['owner']), async (req, res) => {
+// ❌ DELETE OLD RECORDS (2 months)
+router.delete('/cleanup', async (req, res) => {
   try {
-    const records = await Attendance.find().populate('staffId');
-    res.json(records);
+    const twoMonthsAgo = new Date();
+    twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+
+    await Attendance.deleteMany({ date: { $lt: twoMonthsAgo } });
+
+    res.json({ message: 'Old records deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

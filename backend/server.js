@@ -47,12 +47,15 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/customer', require('./routes/customerAuth'));
 app.use('/api/courses', require('./routes/courses'));
 app.use('/api/services', require('./routes/services'));
 app.use('/api/products', require('./routes/products'));
 app.use('/api/billing', require('./routes/billing'));
 app.use('/api/stock', require('./routes/stock'));
 app.use('/api/attendance', require('./routes/attendance'));
+app.use('/api/staff', require('./routes/staff'));
+
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 

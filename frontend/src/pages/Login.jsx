@@ -8,22 +8,26 @@ const Login = () => {
   });
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
+  try {
+    const res = await axios.post(
+      'http://localhost:5000/api/customer/login',
+      formData
+    );
 
-      // ✅ SAVE USER
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      localStorage.setItem("token", res.data.token);
+    // 🔥 SAVE USER
+    localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      alert("Login successful!");
-      window.location.href = "/";
+    alert("Login successful");
 
-    } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
-    }
-  };
+    // 🔁 Redirect
+    window.location.href = "/";
+
+  } catch (err) {
+    alert(err.response?.data?.error || "Login failed");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">

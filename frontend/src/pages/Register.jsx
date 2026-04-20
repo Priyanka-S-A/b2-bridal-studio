@@ -10,18 +10,26 @@ const Register = () => {
   });
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      await axios.post('http://localhost:5000/api/auth/register', form);
+  try {
+    const res = await axios.post(
+      'http://localhost:5000/api/customer/register',
+      formData
+    );
 
-      alert("Registered successfully!");
-      window.location.href = "/login";
+    // 🔥 SAVE USER
+    localStorage.setItem("user", JSON.stringify(res.data.user));
 
-    } catch (err) {
-      alert(err.response?.data?.message || "Register failed");
-    }
-  };
+    alert("Registered successfully");
+
+    // 🔁 Redirect to home
+    window.location.href = "/";
+
+  } catch (err) {
+    alert(err.response?.data?.error || "Registration failed");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">

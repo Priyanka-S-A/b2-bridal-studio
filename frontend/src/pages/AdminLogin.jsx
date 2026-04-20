@@ -20,9 +20,18 @@ const AdminLogin = () => {
         username,
         password
       });
-      
+
+      // ✅ FIXED PART (IMPORTANT)
       localStorage.setItem('adminToken', res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user || {}));
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          username: username,
+          role: res.data.role
+        })
+      );
+
       navigate('/admin');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');

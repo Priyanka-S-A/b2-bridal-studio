@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 
 const attendanceSchema = new mongoose.Schema({
-  staffId: { type: mongoose.Schema.Types.ObjectId, ref: 'Staff', required: true },
-  date: { type: Date, required: true },
-  checkInTime: { type: String },
-  checkOutTime: { type: String }
+  staffId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Staff'
+  },
+  date: Date,
+  entryTime: String,
+  exitTime: String
 });
 
 module.exports = mongoose.model('Attendance', attendanceSchema);

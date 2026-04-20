@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 const staffSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  phone: { type: String, required: true },
-  email: { type: String }
+  name: String,
+  phone: String,
+  email: String,
+  age: Number
 });
 
 module.exports = mongoose.model('Staff', staffSchema);
