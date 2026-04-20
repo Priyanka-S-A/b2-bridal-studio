@@ -265,47 +265,74 @@ const Services = () => {
   const total = subtotal + gst;
 
   const handleWhatsAppBooking = async () => {
-    if (!bookingDate || !bookingTime || cart.length === 0) {
-      alert('Please select services, date, and time before booking.');
-      return;
-    }
+  const userData = localStorage.getItem("user");
 
-    try {
-      // 1. Save the booking/bill to the backend
-      const billPayload = {
-        type: 'service',
-        items: cart.map(item => ({ name: item.name, price: item.price, quantity: 1 })),
-        subtotal,
-        gst,
-        total,
-        customerDetails: {
-          name: 'Online Service Booking',
-          phone: '', // Phone would be gathered on WhatsApp
-          date: bookingDate,
-          time: bookingTime
-        }
-      };
-      await axios.post('http://localhost:5000/api/billing', billPayload);
-    } catch (error) {
-      console.error("Failed to save booking to database", error);
-    }
+  // 🔒 LOGIN CHECK
+  if (!userData) {
+    alert("Please login first");
+    window.location.href = "/login";
+    return;
+  }
 
-    // 2. Redirect to WhatsApp
-    let message = `*New Service Booking*%0A%0A`;
-    message += `*Date:* ${bookingDate}%0A`;
-    message += `*Time:* ${bookingTime}%0A%0A`;
-    message += `*Services Selected:*%0A`;
-    cart.forEach(item => {
-      message += `- ${item.name} (₹${item.price})%0A`;
-    });
-    message += `%0A*Subtotal:* ₹${subtotal}%0A`;
-    message += `*GST (18%):* ₹${gst.toFixed(2)}%0A`;
-    message += `*Total Amount:* ₹${total.toFixed(2)}%0A%0A`;
-    message += `Please confirm my booking and send the QR code for payment.`;
+  const user = JSON.parse(userData);
 
-    const whatsappNumber = '919876543210'; // Dummy number
-    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
-  };
+  if (!bookingDate || !bookingTime || cart.length === 0) {
+    alert('Please select services, date, and time before booking.');
+    return;
+  }
+
+  try {
+    const billPayload = {
+      type: 'service',
+      items: cart.map(item => ({
+        name: item.name,
+        price: item.price,
+        quantity: 1
+      })),
+      subtotal,
+      gst,
+      total,
+      customerDetails: {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        date: bookingDate,
+        time: bookingTime
+      }
+    };
+
+    await axios.post('http://localhost:5000/api/billing', billPayload);
+
+  } catch (error) {
+    console.error("Failed to save booking to database", error);
+  }
+
+  let message = `*New Service Booking*%0A%0A`;
+
+  message += `*Customer Details*%0A`;
+  message += `Name: ${user.name}%0A`;
+  message += `Email: ${user.email}%0A`;
+  message += `Phone: ${user.phone}%0A%0A`;
+
+  message += `*Date:* ${bookingDate}%0A`;
+  message += `*Time:* ${bookingTime}%0A%0A`;
+
+  message += `*Services Selected:*%0A`;
+
+  cart.forEach(item => {
+    message += `- ${item.name} (₹${item.price})%0A`;
+  });
+
+  message += `%0A*Subtotal:* ₹${subtotal}%0A`;
+  message += `*GST (18%):* ₹${gst.toFixed(2)}%0A`;
+  message += `*Total Amount:* ₹${total.toFixed(2)}%0A%0A`;
+
+  message += `Please confirm my booking and send the QR code for payment.`;
+
+  const whatsappNumber = '919876543210';
+
+  window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+};
 
   return (
     <div className="bg-zinc-50 min-h-screen pb-20">

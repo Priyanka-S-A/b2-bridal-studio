@@ -12,6 +12,10 @@ import Certificates from './pages/Certificates';
 import About from './pages/About';
 import Contact from './pages/Contact';
 
+// 🔥 NEW AUTH PAGES
+import Login from './pages/Login';
+import Register from './pages/Register';
+
 // Admin / Owner Pages
 import AdminLogin from './pages/AdminLogin';
 import OwnerLogin from './pages/OwnerLogin';
@@ -22,9 +26,10 @@ function App() {
   return (
     <Router>
       <div className="flex flex-col min-h-screen">
-        {/* We want Navbar to show on public pages but maybe not on admin. For simplicity, we can conditionally render it, or just keep it simple with nested routes. Let's create a PublicLayout. */}
+
         <Routes>
-          {/* Public Routes with Navbar/Footer */}
+
+          {/* PUBLIC ROUTES */}
           <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
           <Route path="/courses" element={<PublicLayout><Courses /></PublicLayout>} />
           <Route path="/courses/:category" element={<PublicLayout><Courses /></PublicLayout>} />
@@ -35,14 +40,20 @@ function App() {
           <Route path="/about" element={<PublicLayout><About /></PublicLayout>} />
           <Route path="/contact" element={<PublicLayout><Contact /></PublicLayout>} />
 
-          {/* Hidden Admin Routes */}
+          {/* 🔥 AUTH ROUTES (WITH NAVBAR) */}
+          <Route path="/login" element={<PublicLayout><Login /></PublicLayout>} />
+          <Route path="/register" element={<PublicLayout><Register /></PublicLayout>} />
+
+          {/* ADMIN ROUTES */}
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin/*" element={<AdminDashboard />} />
 
-          {/* Hidden Owner Routes */}
+          {/* OWNER ROUTES */}
           <Route path="/owner-login" element={<OwnerLogin />} />
           <Route path="/owner/*" element={<OwnerDashboard />} />
+
         </Routes>
+
       </div>
     </Router>
   );

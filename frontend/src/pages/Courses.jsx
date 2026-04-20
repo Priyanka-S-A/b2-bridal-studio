@@ -4,30 +4,401 @@ import { Clock, BookOpen, MessageCircle, MapPin } from 'lucide-react';
 
 const COURSE_DATA = {
   beautician: {
-    title: 'Beautician Courses',
-    courses: [
-      { id: 'b1', title: 'Beautician Salon Course', duration: '3 Months', learn: ['Basic Skin Care', 'Threading', 'Waxing'] },
-      { id: 'b2', title: 'Makeup Artist Course', duration: '2 Months', learn: ['Bridal Makeup', 'Party Makeup', 'Airbrush basics'] },
-      { id: 'b3', title: 'Nail Artist Course', duration: '1 Month', learn: ['Nail Art', 'Extensions', 'Gel Polish'] },
-      { id: 'b4', title: 'Mehandi Artist Course', duration: '1 Month', learn: ['Bridal Mehandi', 'Arabic', 'Figure Work'] },
-      { id: 'b5', title: 'Hair Extension Course', duration: '2 Weeks', learn: ['Clip-ons', 'Tape-ins', 'Micro-ring'] },
-      { id: 'b6', title: 'Hairstyle Course', duration: '1 Month', learn: ['Bridal Hair', 'Braids', 'Heat styling'] }
-    ]
-  },
+  title: 'Beautician Courses',
+  courses: [
+    {
+      id: 'b1',
+      title: 'Beautician Salon Course',
+      duration: '15 Days',
+      learn: [
+        'Facials & skincare',
+        'Threading & waxing',
+        'Manicure & pedicure'
+      ]
+    },
+    {
+      id: 'b2',
+      title: 'Makeup Artist Course',
+      duration: '15 Days',
+      learn: [
+        'Contouring & highlighting',
+        'Bridal & party makeup',
+        'Product & brush knowledge'
+      ]
+    },
+    {
+      id: 'b3',
+      title: 'Nail Artist Course',
+      duration: '3 or 5 Days',
+      learn: [
+        'Gel & acrylic nails',
+        'Nail art designs',
+        'French manicure'
+      ]
+    },
+    {
+      id: 'b4',
+      title: 'Mehandi Artist Course',
+      duration: '3 or 5 Days',
+      learn: [
+        'Arabic & Indian designs',
+        'Cone making',
+        'Speed practice'
+      ]
+    },
+    {
+      id: 'b5',
+      title: 'Hair Extension Course',
+      duration: '3 Days',
+      learn: [
+        'Clip-in & keratin extensions',
+        'Color blending',
+        'Hair care & removal'
+      ]
+    },
+    {
+      id: 'b6',
+      title: 'Hairstyle Course',
+      duration: '1 or 2 Days',
+      learn: [
+        'Buns, curls & braids',
+        'Tool-based styling',
+        'Accessory placement'
+      ]
+    }
+  ]
+},
   fashion: {
-    title: 'Fashion & Design',
-    courses: [
-      { id: 'f1', title: 'Fashion Designing Course', duration: '6 Months', learn: ['Pattern Making', 'Garment Construction', 'Illustration'] },
-      { id: 'f2', title: 'Saree Draping Course', duration: '2 Weeks', learn: ['Traditional Drapes', 'Modern Drapes', 'Bridal Draping'] }
-    ]
-  },
+  title: 'Fashion & Design',
+  courses: [
+    {
+      id: 'f1',
+      title: 'Fashion Designing Course',
+      duration: 'Weekly Ongoing Classes',
+      learn: [
+        'Blouse Design',
+        'Kurtis & Frocks',
+        'Western Wear',
+        'Kids Dress'
+      ]
+    },
+    {
+      id: 'f2',
+      title: 'Saree Draping & Pre-Pleating Course',
+      duration: '1 or 2 Days',
+      learn: [
+        'Bridal Draping',
+        'Party Draping',
+        'Pre-Pleating Techniques'
+      ]
+    }
+  ]
+},
   embroidery: {
-    title: 'Embroidery & Crafts',
-    courses: [
-      { id: 'e1', title: 'Aari Embroidery', duration: '2 Months', learn: ['Basic Stitches', 'Zardosi Work', 'Bead Work'] },
-      { id: 'e2', title: 'Machine Embroidery', duration: '1 Month', learn: ['Operating Machine', 'Motif Design'] }
-    ]
-  }
+  title: 'Embroidery & Crafts',
+  courses: [
+    {
+      id: 'e1',
+      title: 'Aari Embroidery Course',
+      duration: '5, 10 or 25 Days',
+      learn: [
+        'Basic stitches',
+        'Zari & stone work',
+        'Advanced designer motifs'
+      ]
+    },
+    {
+      id: 'e2',
+      title: 'Aari Brooches Work',
+      duration: '3 Days',
+      learn: [
+        'Patch & motif brooch',
+        'Zardosi brooch',
+        'Jewellery-style brooch'
+      ]
+    },
+    {
+      id: 'e3',
+      title: 'Machine Embroidery',
+      duration: '5 Days',
+      learn: [
+        'Thread tension control',
+        'Motif embroidery',
+        'Border & neckline designs'
+      ]
+    },
+    {
+      id: 'e4',
+      title: 'Hand Embroidery',
+      duration: '3 Days',
+      learn: [
+        'French knot & satin stitch',
+        'Mirror work',
+        'Simple motif making'
+      ]
+    },
+    {
+      id: 'e5',
+      title: 'Fabric Painting',
+      duration: '3 Days',
+      learn: [
+        'Fabric color mixing',
+        'Floral & motif painting',
+        'Block & stencil design'
+      ]
+    },
+    {
+      id: 'e6',
+      title: 'Simple Chemical Work',
+      duration: '5 Days',
+      learn: [
+        'Chemical lace technique',
+        'Oxidation effect',
+        'Fabric texture designs'
+      ]
+    }
+  ]
+},
+jewellery: {
+  title: 'Jewellery Making Modules',
+  courses: [
+    {
+      id: 'j1',
+      title: 'Silk Thread Jewellery',
+      duration: '3 Days',
+      learn: [
+        'Matte finishing',
+        'Jhumka making',
+        'Silk chokers & chains'
+      ]
+    },
+    {
+      id: 'j2',
+      title: 'Kundan Jewellery',
+      duration: '3 Days',
+      learn: [
+        'Stone setting',
+        'Kundan rings & chokers',
+        'Color combination patterns'
+      ]
+    },
+    {
+      id: 'j3',
+      title: 'Crystal Jewellery',
+      duration: '3 Days',
+      learn: [
+        'Bead weaving',
+        'Wire looping technique',
+        'Party & casual wear sets'
+      ]
+    },
+    {
+      id: 'j4',
+      title: 'Terracotta Jewellery',
+      duration: '3 Days',
+      learn: [
+        'Clay molding',
+        'Color baking',
+        'Necklace & studs creation'
+      ]
+    }
+  ]
+},
+bags: {
+  title: 'Bags & Accessories Modules',
+  courses: [
+    {
+      id: 'ba1',
+      title: 'Jute Bag Making',
+      duration: '5 Days',
+      learn: [
+        'Basic & designer jute bags',
+        'Lining & finishing',
+        'Handle and zip attachment'
+      ]
+    },
+    {
+      id: 'ba2',
+      title: 'Cloth Bag Making',
+      duration: '5 Days',
+      learn: [
+        'Cutting & stitching',
+        'Pattern-based bags',
+        'Reversible & foldable designs'
+      ]
+    },
+    {
+      id: 'ba3',
+      title: 'Wire Bags',
+      duration: '5 Days',
+      learn: [
+        'Wire frame basics',
+        'Bead fixing & pattern design',
+        'Handle & closure techniques'
+      ]
+    },
+    {
+      id: 'ba4',
+      title: 'Macramé Bags',
+      duration: '3 Days',
+      learn: [
+        'Basic macramé knots',
+        'Bag structure & shaping',
+        'Fringe & decorative finishing'
+      ]
+    },
+    {
+      id: 'ba5',
+      title: 'Tatting',
+      duration: '3 Days',
+      learn: [
+        'Shuttle tatting basics',
+        'Motif & edging creation',
+        'Using tatting in accessories'
+      ]
+    },
+    {
+      id: 'ba6',
+      title: 'Knitting',
+      duration: '3 Days',
+      learn: [
+        'Basic knit & purl',
+        'Simple patterns',
+        'Scarves & small projects'
+      ]
+    },
+    {
+      id: 'ba7',
+      title: 'Crochet',
+      duration: '3 Days',
+      learn: [
+        'Basic crochet stitches',
+        'Granny squares & motifs',
+        'Mini bags & accessories'
+      ]
+    },
+    {
+      id: 'ba8',
+      title: 'Brooches Making',
+      duration: '3 Days',
+      learn: [
+        'Design planning',
+        'Bead & fabric brooches',
+        'Finishing & attachment'
+      ]
+    }
+  ]
+},
+kids: {
+  title: 'Kids Learning Programs',
+  courses: [
+    {
+      id: 'k1',
+      title: 'Abacus Training',
+      duration: '3 / 6 Months',
+      learn: [
+        'Visual calculation',
+        'Brain development',
+        'Confidence building'
+      ]
+    },
+    {
+      id: 'k2',
+      title: 'Kids Tuition',
+      duration: 'Monthly',
+      learn: [
+        'All subjects',
+        'Homework assistance',
+        'Exam preparation'
+      ]
+    },
+    {
+      id: 'k3',
+      title: 'Hindi Language Course',
+      duration: '1 – 3 Months',
+      learn: [
+        'Basic grammar',
+        'Conversation skills',
+        'Writing practice'
+      ]
+    },
+    {
+      id: 'k4',
+      title: 'Phonics Training',
+      duration: '2 Months',
+      learn: [
+        'Sound recognition',
+        'Word building',
+        'Reading fluency'
+      ]
+    },
+    {
+      id: 'k5',
+      title: 'Silambam Training',
+      duration: 'Monthly',
+      learn: [
+        'Stick techniques',
+        'Body balance',
+        'Self-defense skills'
+      ]
+    },
+    {
+      id: 'k6',
+      title: 'Karate Training',
+      duration: 'Monthly',
+      learn: [
+        'Basic to advanced levels',
+        'Discipline & focus',
+        'Belt grading system'
+      ]
+    }
+  ]
+},
+special: {
+  title: 'Special Skill Courses',
+  courses: [
+    {
+      id: 's1',
+      title: 'Soft Toys Making',
+      duration: '3 Days',
+      learn: [
+        'Doll & teddy making',
+        'Pattern cutting',
+        'Stuffing & finishing'
+      ]
+    },
+    {
+      id: 's2',
+      title: 'Abacus Training',
+      duration: '1 Month',
+      learn: [
+        'Basic & advance levels',
+        'Speed calculation',
+        'Memory improvement'
+      ]
+    },
+    {
+      id: 's3',
+      title: 'Bakery Products Course',
+      duration: '5 Days',
+      learn: [
+        'Cake & cupcake baking',
+        'Bread & bun making',
+        'Decorating basics'
+      ]
+    },
+    {
+      id: 's4',
+      title: 'Palm Leaf Craft Course',
+      duration: '5 Days',
+      learn: [
+        'Basket & box weaving',
+        'Decorative crafts',
+        'Natural dye finishing'
+      ]
+    }
+  ]
+}
 };
 
 const Courses = () => {
@@ -38,10 +409,36 @@ const Courses = () => {
   const categoryData = category ? COURSE_DATA[category] : null;
 
   const handleEnroll = (course) => {
-    const message = `*Course Enrollment Request*%0A%0A*Category:* ${categoryData.title}%0A*Course:* ${course.title}%0A*Duration:* ${course.duration}%0A*Branch Selected:* ${selectedBranch === 'branch1' ? 'Branch 1 (Main St)' : 'Branch 2 (Elegant Ave)'}%0A%0A Please send the QR code for fee payment.`;
-    const whatsappNumber = '919876543210';
-    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
-  };
+  const userData = localStorage.getItem("user");
+
+  // 🔒 LOGIN CHECK
+  if (!userData) {
+    alert("Please login first");
+    window.location.href = "/login";
+    return;
+  }
+
+  const user = JSON.parse(userData);
+
+  const message = `*Course Enrollment Request*%0A%0A
+*Customer Details*%0A
+Name: ${user.name}%0A
+Email: ${user.email}%0A
+Phone: ${user.phone}%0A%0A
+
+*Category:* ${categoryData.title}%0A
+*Course:* ${course.title}%0A
+*Duration:* ${course.duration}%0A
+*Branch:* ${selectedBranch === 'branch1' 
+  ? 'Branch 1 (Main St)' 
+  : 'Branch 2 (Elegant Ave)'}%0A%0A
+
+Please send the QR code for fee payment.`;
+
+  const whatsappNumber = '919876543210';
+
+  window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+};
 
   if (!category || !categoryData) {
     return (

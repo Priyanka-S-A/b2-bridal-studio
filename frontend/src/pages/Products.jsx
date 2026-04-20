@@ -41,8 +41,26 @@ const Products = () => {
   const gst = subtotal * 0.18;
   const total = subtotal + gst;
 
+  // 🔥 UPDATED FUNCTION (LOGIN + USER DETAILS)
   const handleWhatsAppBooking = () => {
-    let message = `*New Product Order*%0A%0A*Items Selected:*%0A`;
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    // 🔒 If not logged in → redirect
+    if (!user) {
+      alert("Please login to continue");
+      window.location.href = "/login";
+      return;
+    }
+
+    let message = `*New Product Order*%0A%0A`;
+
+    // 👤 USER DETAILS
+    message += `*Customer Details*%0A`;
+    message += `Name: ${user.name}%0A`;
+    message += `Email: ${user.email}%0A`;
+    message += `Phone: ${user.phone}%0A%0A`;
+
+    message += `*Items Selected:*%0A`;
 
     cart.forEach(item => {
       message += `- ${item.quantity}x ${item.name} (₹${item.price * item.quantity})%0A`;
@@ -102,7 +120,7 @@ const Products = () => {
           ))}
         </div>
 
-        {/* 🔥 UPDATED CART (LIKE YOUR IMAGE) */}
+        {/* CART */}
         <div>
           <div className="bg-white rounded-xl shadow p-6 sticky top-24">
 
