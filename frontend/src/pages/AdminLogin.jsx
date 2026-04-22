@@ -14,7 +14,6 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', {
         username,
@@ -53,7 +52,7 @@ const AdminLogin = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100 border-t-4 border-t-gold-500">
-          
+
           {error && (
             <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm mb-4 text-center">
               {error}

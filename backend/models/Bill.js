@@ -14,9 +14,13 @@ const billSchema = new mongoose.Schema({
   customerDetails: {
     name: String,
     phone: String,
-    date: String, // for service booking
-    time: String  // for service booking
-  }
+    date: String,
+    time: String
+  },
+  // New fields for booking pipeline
+  bookingId: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking' },
+  branch: { type: String },
+  mode: { type: String, default: 'UPI' }
 });
 
 module.exports = mongoose.model('Bill', billSchema);

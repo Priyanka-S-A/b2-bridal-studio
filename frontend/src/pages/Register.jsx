@@ -1,100 +1,80 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { fadeUp, staggerContainer } from '../animations/variants';
 
 const Register = () => {
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: ''
-  });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  try {
-    const res = await axios.post(
-      'http://localhost:5000/api/customer/register',
-      formData
-    );
-
-    // 🔥 SAVE USER
-    localStorage.setItem("user", JSON.stringify(res.data.user));
-
-    alert("Registered successfully");
-
-    // 🔁 Redirect to home
-    window.location.href = "/";
-
-  } catch (err) {
-    alert(err.response?.data?.error || "Registration failed");
-  }
-};
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await axios.post('http://localhost:5000/api/customer/register', form);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      alert('Registered successfully');
+      window.location.href = '/';
+    } catch (err) {
+      alert(err.response?.data?.error || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
+    <div className="min-h-screen flex items-center justify-center relative" style={{ background: '#000' }}>
+      <div className="absolute pointer-events-none" style={{ top: '30%', left: '50%', transform: 'translate(-50%, -50%)', width: '500px', height: '500px', background: 'radial-gradient(circle, rgba(201,162,39,0.06), transparent 65%)' }} />
 
-      {/* CARD */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl w-96 space-y-5 shadow-2xl border border-gray-100"
-      >
+      <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="relative w-full max-w-md mx-4">
+        {/* Logo */}
+        <motion.div variants={fadeUp} className="text-center mb-8">
+          <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3" style={{ border: '1px solid rgba(201,162,39,0.4)', boxShadow: '0 0 20px rgba(201,162,39,0.15)' }}>
+            <span className="font-cinzel text-lg font-bold text-gold-gradient">B2</span>
+          </div>
+          <h1 className="font-cinzel text-sm tracking-[0.3em] uppercase" style={{ color: '#F8F5F0' }}>Create Account</h1>
+          <p className="font-cormorant italic text-sm mt-1" style={{ color: 'rgba(248,245,240,0.4)' }}>Join our community of artisans</p>
+        </motion.div>
 
-        {/* TITLE */}
-        <h2 className="text-3xl font-bold text-center text-black">
-          Create Account
-        </h2>
+        {/* Form */}
+        <motion.form variants={fadeUp} onSubmit={handleSubmit} className="glass-dark p-8 rounded-sm" style={{ border: '1px solid rgba(201,162,39,0.15)' }}>
+          <div className="flex flex-col gap-5">
+            <div>
+              <label className="block font-cinzel text-[0.55rem] tracking-[0.2em] uppercase mb-2" style={{ color: 'rgba(201,162,39,0.5)' }}>Full Name</label>
+              <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Your full name" required className="input-luxury rounded-sm" />
+            </div>
+            <div>
+              <label className="block font-cinzel text-[0.55rem] tracking-[0.2em] uppercase mb-2" style={{ color: 'rgba(201,162,39,0.5)' }}>Email</label>
+              <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="your@email.com" required className="input-luxury rounded-sm" />
+            </div>
+            <div>
+              <label className="block font-cinzel text-[0.55rem] tracking-[0.2em] uppercase mb-2" style={{ color: 'rgba(201,162,39,0.5)' }}>Phone</label>
+              <input type="tel" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="+91 00000 00000" required className="input-luxury rounded-sm" />
+            </div>
+            <div>
+              <label className="block font-cinzel text-[0.55rem] tracking-[0.2em] uppercase mb-2" style={{ color: 'rgba(201,162,39,0.5)' }}>Password</label>
+              <div className="relative">
+                <input type={showPw ? 'text' : 'password'} value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} placeholder="••••••••" required className="input-luxury rounded-sm pr-12" />
+                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(201,162,39,0.4)' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    {showPw ? <><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></> : <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>}
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <button type="submit" disabled={loading} className="btn-gold w-full justify-center mt-2" style={{ opacity: loading ? 0.6 : 1 }}>
+              {loading ? 'Creating account...' : 'Register'}
+            </button>
+          </div>
+        </motion.form>
 
-        {/* NAME */}
-        <input
-          type="text"
-          placeholder="Full Name"
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c9a13b]"
-          required
-        />
-
-        {/* EMAIL */}
-        <input
-          type="email"
-          placeholder="Email"
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c9a13b]"
-          required
-        />
-
-        {/* PHONE */}
-        <input
-          type="text"
-          placeholder="Phone Number"
-          onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c9a13b]"
-          required
-        />
-
-        {/* PASSWORD */}
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#c9a13b]"
-          required
-        />
-
-        {/* BUTTON */}
-        <button className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-[#c9a13b] hover:text-black transition">
-          Register
-        </button>
-
-        {/* LOGIN LINK */}
-        <p className="text-sm text-center text-gray-500">
-          Already have an account?{" "}
-          <a href="/login" className="text-[#c9a13b] font-semibold">
-            Login
-          </a>
-        </p>
-
-      </form>
+        <motion.p variants={fadeUp} className="text-center mt-6 font-cormorant text-sm" style={{ color: 'rgba(248,245,240,0.4)' }}>
+          Already have an account?{' '}
+          <Link to="/login" className="font-cinzel text-[0.65rem] tracking-[0.1em] uppercase" style={{ color: '#C9A227' }}>Login</Link>
+        </motion.p>
+      </motion.div>
     </div>
   );
 };

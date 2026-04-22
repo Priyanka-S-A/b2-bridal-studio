@@ -19,7 +19,7 @@ app.use('/uploads', express.static('uploads'));
 mongoose.connect(process.env.MONGODB_URI)
   .then(async () => {
     console.log('MongoDB connected');
-    
+
     // Auto-seed default users
     try {
       const User = require('./models/User');
@@ -31,7 +31,7 @@ mongoose.connect(process.env.MONGODB_URI)
         await User.create({ username: 'owner', password: hashedOwner, role: 'owner' });
         console.log('[Seed] Created default owner (owner / owner123)');
       }
-      
+
       const staffExists = await User.findOne({ role: 'staff' });
       if (!staffExists) {
         const hashedStaff = await bcrypt.hash('staff123', 10);
@@ -55,6 +55,8 @@ app.use('/api/billing', require('./routes/billing'));
 app.use('/api/stock', require('./routes/stock'));
 app.use('/api/attendance', require('./routes/attendance'));
 app.use('/api/staff', require('./routes/staff'));
+app.use('/api/blogs', require('./routes/blogs'));
+app.use('/api/bookings', require('./routes/bookings'));
 
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));

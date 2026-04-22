@@ -1,62 +1,189 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
+
+const QUICK_LINKS = [
+  { label: 'Our Services', to: '/services' },
+  { label: 'Academy', to: '/courses' },
+  { label: 'Gallery', to: '/gallery' },
+  { label: 'Certificates', to: '/certificates' },
+  { label: 'About Us', to: '/about' },
+  { label: 'Contact', to: '/contact' },
+];
+
+const COURSES = [
+  { label: 'Bridal Makeup', to: '/courses/beautician' },
+  { label: 'Fashion & Design', to: '/courses/fashion' },
+  { label: 'Embroidery & Crafts', to: '/courses/embroidery' },
+  { label: 'Jewellery Making', to: '/courses/jewellery' },
+  { label: 'Bags & Accessories', to: '/courses/bags' },
+];
+
+const SocialLink = ({ href, label, children }) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={label}
+    className="w-9 h-9 flex items-center justify-center transition-all duration-300"
+    style={{
+      border: '1px solid rgba(201,162,39,0.2)',
+      color: 'rgba(248,245,240,0.5)',
+    }}
+    onMouseEnter={e => {
+      e.currentTarget.style.background = 'rgba(201,162,39,0.12)';
+      e.currentTarget.style.borderColor = 'rgba(201,162,39,0.5)';
+      e.currentTarget.style.color = '#C9A227';
+    }}
+    onMouseLeave={e => {
+      e.currentTarget.style.background = 'transparent';
+      e.currentTarget.style.borderColor = 'rgba(201,162,39,0.2)';
+      e.currentTarget.style.color = 'rgba(248,245,240,0.5)';
+    }}
+  >
+    {children}
+  </a>
+);
 
 const Footer = () => {
   return (
-    <footer className="bg-black text-white py-12 border-t-4 border-gold-500">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer style={{ background: '#000', borderTop: '1px solid rgba(201,162,39,0.15)' }}>
+      {/* Main footer grid */}
+      <div className="max-w-[1300px] mx-auto px-6 lg:px-12 py-16 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-10">
+
+        {/* Brand column */}
         <div>
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 bg-gold-500 rounded-full flex items-center justify-center font-serif text-black font-bold border border-white">
-              BP
+          <Link to="/" className="flex items-center gap-3 mb-5 w-fit">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center"
+              style={{ border: '1px solid rgba(201,162,39,0.4)' }}
+            >
+              <span
+                className="font-cinzel text-sm font-bold"
+                style={{
+                  background: 'linear-gradient(135deg, #e8d17a, #C9A227)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                B2
+              </span>
             </div>
-            <span className="font-serif text-xl text-gold-500">Beauty Parlor</span>
+            <div>
+              <div className="font-cinzel text-xs tracking-[0.2em] uppercase" style={{ color: '#C9A227' }}>B2 Bridal</div>
+              <div className="font-cormorant text-[0.65rem] tracking-wider uppercase" style={{ color: 'rgba(248,245,240,0.35)' }}>Studio</div>
+            </div>
+          </Link>
+          <p className="font-cormorant leading-relaxed text-sm mb-6" style={{ color: 'rgba(248,245,240,0.45)', fontSize: '1rem' }}>
+            Crafting luxury bridal experiences and professional training in Chennai and Madurai since 2018.
+          </p>
+          {/* Social links */}
+          <div className="flex gap-2">
+            <SocialLink href="https://www.facebook.com/b2bridalmakeoverstudio" label="Facebook">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+              </svg>
+            </SocialLink>
+            <SocialLink href="https://www.instagram.com/b2_bridal_studio_" label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="14" height="14">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+              </svg>
+            </SocialLink>
+            <SocialLink href="https://www.youtube.com/@ShammuB2" label="YouTube">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                <path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.95C18.88 4 12 4 12 4s-6.88 0-8.59.47a2.78 2.78 0 00-1.95 1.95A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.5C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/>
+              </svg>
+            </SocialLink>
           </div>
-          <p className="text-gray-400 text-sm">Experience luxury and elegance with our premium beauty services and courses.</p>
         </div>
+
+        {/* Quick Links */}
         <div>
-          <h3 className="text-gold-500 font-serif text-lg mb-4">Quick Links</h3>
-          <ul className="space-y-2 text-sm text-gray-300">
-            <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
-            <li><Link to="/services" className="hover:text-white transition-colors">Our Services</Link></li>
-            <li><Link to="/courses" className="hover:text-white transition-colors">Academy</Link></li>
-            <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
+          <h3 className="font-cinzel text-[0.65rem] tracking-[0.35em] uppercase mb-6" style={{ color: '#C9A227' }}>
+            Quick Links
+          </h3>
+          <ul className="flex flex-col gap-3">
+            {QUICK_LINKS.map(link => (
+              <li key={link.to}>
+                <Link
+                  to={link.to}
+                  className="font-cormorant text-sm transition-colors duration-200 flex items-center gap-2 group"
+                  style={{ color: 'rgba(248,245,240,0.45)', fontSize: '1rem' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#C9A227'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(248,245,240,0.45)'; }}
+                >
+                  <span className="w-3 h-px opacity-0 group-hover:opacity-100 transition-all" style={{ background: '#C9A227' }} />
+                  {link.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
+
+        {/* Courses */}
         <div>
-          <h3 className="text-gold-500 font-serif text-lg mb-4">Contact</h3>
-          <ul className="space-y-2 text-sm text-gray-300">
-            <li>Branch 1: No: 63, Madavaram Red Hills Rd,Kodungaiyur, Chennai, Tamil Nadu - 600060</li>
-            <li>Branch 2: Madurai</li>
-            <li>Phone: +91 98405 51365</li>
-            <li>Phone: +91 97908 82561</li>
-             <li>Email: b2shammu@gmail.com</li>
-            <li>Email: tharagaitrust@gmail.com</li>
+          <h3 className="font-cinzel text-[0.65rem] tracking-[0.35em] uppercase mb-6" style={{ color: '#C9A227' }}>
+            Academy
+          </h3>
+          <ul className="flex flex-col gap-3">
+            {COURSES.map(link => (
+              <li key={link.to}>
+                <Link
+                  to={link.to}
+                  className="font-cormorant text-sm transition-colors duration-200 flex items-center gap-2 group"
+                  style={{ color: 'rgba(248,245,240,0.45)', fontSize: '1rem' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#C9A227'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(248,245,240,0.45)'; }}
+                >
+                  <span className="w-3 h-px opacity-0 group-hover:opacity-100 transition-all" style={{ background: '#C9A227' }} />
+                  {link.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
+
+        {/* Contact */}
         <div>
-          <h3 className="text-gold-500 font-serif text-lg mb-4">Follow Us</h3>
-          <div className="flex space-x-4">
-            {/* Social Icons Placeholders */}
-           <a href="https://www.facebook.com/b2bridalmakeoverstudio" target="_blank" rel="noopener noreferrer">
-  <div className="w-8 h-8 bg-zinc-800 rounded-full flex items-center justify-center hover:bg-gold-500 hover:text-black transition-colors cursor-pointer">
-    FB
-  </div>
-          </a>
-            <a href="https://www.instagram.com/b2_bridal_studio_?igsh=MTM1Zzh4eWlkNjVqOQ%3D%3D" target="_blank" rel="noopener noreferrer">
-  <div className="w-8 h-8 bg-zinc-800 rounded-full flex items-center justify-center hover:bg-gold-500 hover:text-black transition-colors cursor-pointer">
-    IG
-  </div>
-</a>
-            <a href="https://www.youtube.com/@ShammuB2" target="_blank" rel="noopener noreferrer">
-  <div className="w-8 h-8 bg-zinc-800 rounded-full flex items-center justify-center hover:bg-gold-500 hover:text-black transition-colors cursor-pointer">
-    YT
-  </div>
-</a>
-          </div>
+          <h3 className="font-cinzel text-[0.65rem] tracking-[0.35em] uppercase mb-6" style={{ color: '#C9A227' }}>
+            Contact
+          </h3>
+          <ul className="flex flex-col gap-4">
+            {[
+              { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9A227" strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>, text: 'No. 63, Madavaram Red Hills Rd, Kodungaiyur, Chennai — 600060' },
+              { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9A227" strokeWidth="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>, text: 'Madurai, Tamil Nadu' },
+              { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9A227" strokeWidth="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>, text: '+91 98405 51365' },
+              { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9A227" strokeWidth="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>, text: '+91 97908 82561' },
+              { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9A227" strokeWidth="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>, text: 'b2shammu@gmail.com' },
+            ].map((item, i) => (
+              <li key={i} className="flex gap-2 items-start">
+                <span className="flex-shrink-0 mt-0.5">{item.icon}</span>
+                <span className="font-cormorant leading-snug" style={{ fontSize: '0.95rem', color: 'rgba(248,245,240,0.45)' }}>
+                  {item.text}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-8 border-t border-zinc-800 text-center text-sm text-gray-500">
-        &copy; {new Date().getFullYear()} Beauty Parlor. All rights reserved.
+
+      {/* Bottom bar */}
+      <div
+        className="max-w-[1300px] mx-auto px-6 lg:px-12 py-6 flex flex-col sm:flex-row items-center justify-between gap-3"
+        style={{ borderTop: '1px solid rgba(201,162,39,0.08)' }}
+      >
+        <p className="font-cormorant text-sm" style={{ color: 'rgba(248,245,240,0.25)', fontSize: '0.9rem' }}>
+          © {new Date().getFullYear()} B2 Bridal Studio. All rights reserved.
+        </p>
+        <div className="flex items-center gap-2">
+          <div className="gold-divider" style={{ width: '20px' }} />
+          <span className="font-cinzel text-[0.55rem] tracking-[0.3em] uppercase" style={{ color: 'rgba(201,162,39,0.3)' }}>
+            Luxury. Art. Excellence.
+          </span>
+          <div className="gold-divider" style={{ width: '20px' }} />
+        </div>
       </div>
     </footer>
   );

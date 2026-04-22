@@ -1,28 +1,61 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import Preloader from '../components/home/Preloader';
+import Hero from '../components/home/Hero';
+import OwnerSpotlight from '../components/home/OwnerSpotlight';
+import CertificatesCarousel from '../components/home/CertificatesCarousel';
+import CoursesGrid from '../components/home/CoursesGrid';
+import WhyChooseUs from '../components/home/WhyChooseUs';
+import Achievements from '../components/home/Achievements';
+import GalleryShowcase from '../components/home/GalleryShowcase';
+import Testimonials from '../components/home/Testimonials';
+import VideoTestimonialsSection from '../components/home/VideoTestimonialsSection';
+import Blogs from '../components/home/Blogs';
+import ContactSection from '../components/home/ContactSection';
 
 const Home = () => {
+  const [loading, setLoading] = useState(true);
+
+  // Prevent scroll during preloader
+  useEffect(() => {
+    if (loading) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [loading]);
+
   return (
-    <div className="bg-white">
-      {/* Hero Section */}
-      <div className="bg-black text-white py-20 px-4 text-center">
-        <h1 className="text-5xl md:text-7xl heading-luxury mb-6">Elevate Your Beauty</h1>
-        <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-10">
-          Discover premium beauty services and professional courses designed to bring out the best in you.
-        </p>
-        <button className="bg-gold-500 hover:bg-gold-400 text-black font-bold py-3 px-8 rounded-full transition-colors duration-300">
-          Explore Services
-        </button>
-      </div>
-      
-      {/* Content Section Placeholder */}
-      <div className="max-w-7xl mx-auto py-16 px-4 text-center">
-        <h2 className="text-3xl heading-luxury text-gold-500 mb-4">Welcome to Beauty Parlor</h2>
-        <p className="text-gray-600 max-w-3xl mx-auto">
-          We offer a luxury experience with state-of-the-art facilities, premium products, and expert staff. 
-          Join our academy to learn from the best in the industry.
-        </p>
-      </div>
-    </div>
+    <>
+      {/* Preloader */}
+      <AnimatePresence>
+        {loading && (
+          <Preloader onComplete={() => setLoading(false)} />
+        )}
+      </AnimatePresence>
+
+      {/* Main content — hidden until preloader done */}
+      <main
+        style={{
+          opacity: loading ? 0 : 1,
+          transition: 'opacity 0.5s ease',
+          background: '#000',
+        }}
+      >
+        <Hero />
+        <OwnerSpotlight />
+        <CertificatesCarousel />
+        <CoursesGrid />
+        <WhyChooseUs />
+        <Achievements />
+        <GalleryShowcase />
+        <Testimonials />
+        <VideoTestimonialsSection />
+        <Blogs />
+        <ContactSection />
+      </main>
+    </>
   );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Search, ShoppingCart, Calendar, Clock, Check, Trash2, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Search, ShoppingCart, Calendar, Clock, Check, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 
 const groupServicesByCategory = (data) => {
   if (!Array.isArray(data)) return []; // safety
@@ -207,6 +208,7 @@ const SERVICE_CATEGORIES = [
 ];
 
 const Services = () => {
+  const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [cart, setCart] = useState([]);
@@ -264,177 +266,88 @@ const Services = () => {
   const gst = subtotal * 0.18;
   const total = subtotal + gst;
 
-  const handleWhatsAppBooking = async () => {
-  const userData = localStorage.getItem("user");
-
-  // 🔒 LOGIN CHECK
-  if (!userData) {
-    alert("Please login first");
-    window.location.href = "/login";
-    return;
-  }
-
-  const user = JSON.parse(userData);
-
-  if (!bookingDate || !bookingTime || cart.length === 0) {
-    alert('Please select services, date, and time before booking.');
-    return;
-  }
-
-  try {
-    const billPayload = {
-      type: 'service',
-      items: cart.map(item => ({
-        name: item.name,
-        price: item.price,
-        quantity: 1
-      })),
-      subtotal,
-      gst,
-      total,
-      customerDetails: {
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        date: bookingDate,
-        time: bookingTime
-      }
-    };
-
-    await axios.post('http://localhost:5000/api/billing', billPayload);
-
-  } catch (error) {
-    console.error("Failed to save booking to database", error);
-  }
-
-  let message = `*New Service Booking*%0A%0A`;
-
-  message += `*Customer Details*%0A`;
-  message += `Name: ${user.name}%0A`;
-  message += `Email: ${user.email}%0A`;
-  message += `Phone: ${user.phone}%0A%0A`;
-
-  message += `*Date:* ${bookingDate}%0A`;
-  message += `*Time:* ${bookingTime}%0A%0A`;
-
-  message += `*Services Selected:*%0A`;
-
-  cart.forEach(item => {
-    message += `- ${item.name} (₹${item.price})%0A`;
-  });
-
-  message += `%0A*Subtotal:* ₹${subtotal}%0A`;
-  message += `*GST (18%):* ₹${gst.toFixed(2)}%0A`;
-  message += `*Total Amount:* ₹${total.toFixed(2)}%0A%0A`;
-
-  message += `Please confirm my booking and send the QR code for payment.`;
-
-  const whatsappNumber = '919876543210';
-
-  window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
-};
+  const handleProceedToPayment = () => {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      alert('Please login first');
+      navigate('/login');
+      return;
+    }
+    if (cart.length === 0) {
+      alert('Please select services before proceeding.');
+      return;
+    }
+    // Store service cart items in localStorage for the payment flow
+    localStorage.setItem('b2_cart', JSON.stringify(
+      cart.map(item => ({ ...item, quantity: 1 }))
+    ));
+    navigate('/payment');
+  };
 
   return (
-    <div className="bg-zinc-50 min-h-screen pb-20">
-      {/* Header */}
-      <div className="bg-black text-white py-16 px-4 text-center">
-        <h1 className="text-4xl md:text-5xl heading-luxury text-gold-500 mb-4">Premium Services</h1>
-        <p className="text-gray-300 max-w-2xl mx-auto">
-          Explore our wide range of luxury treatments and book your appointment today.
-        </p>
+    <div style={{ background: '#000', minHeight: '100vh', paddingBottom: '5rem' }}>
+      {/* Hero Banner */}
+      <div className="page-hero">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="gold-divider" style={{ width: '40px' }} />
+            <span className="font-cinzel text-[0.65rem] tracking-[0.4em] uppercase" style={{ color: '#C9A227' }}>Treatments</span>
+            <div className="gold-divider" style={{ width: '40px' }} />
+          </div>
+          <h1 className="font-cinzel font-bold uppercase" style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', color: '#F8F5F0', letterSpacing: '0.05em' }}>Premium Services</h1>
+          <p className="font-cormorant italic mt-4" style={{ fontSize: '1.15rem', color: 'rgba(248,245,240,0.5)' }}>Explore our luxury treatments and book your appointment today.</p>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Services List Section */}
+        {/* Services List */}
         <div className="lg:col-span-2">
-          {/* Search Bar */}
           <div className="relative mb-8">
-            <input 
-              type="text" 
-              placeholder="Search services (e.g. Facial, Waxing)..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none transition-all shadow-sm"
-            />
-            <Search className="absolute left-4 top-3.5 text-gray-400" size={20} />
+            <input type="text" placeholder="Search services..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="input-luxury pl-12 rounded-sm" />
+            <Search className="absolute left-4 top-4" size={18} style={{ color: 'rgba(201,162,39,0.4)' }} />
           </div>
 
           {loading ? (
-            <div className="flex justify-center py-20"><div className="w-8 h-8 border-4 border-gold-500 border-t-transparent rounded-full animate-spin"></div></div>
+            <div className="flex justify-center py-20"><div className="w-8 h-8 rounded-full animate-spin" style={{ border: '2px solid rgba(201,162,39,0.2)', borderTopColor: '#C9A227' }} /></div>
           ) : (
-            <div className="space-y-4">
+            <div className="flex flex-col gap-4">
               {filteredCategories.map((category) => (
-                <div key={category.category} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                  <button 
-                    onClick={() => toggleCategory(category.category)}
-                    className="w-full px-6 py-4 flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors"
-                  >
-                    <span className="text-lg font-bold text-gray-900 uppercase tracking-wider">{category.category}</span>
-                    {expandedCategory === category.category ? <ChevronUp className="text-gold-500" /> : <ChevronDown className="text-gray-400" />}
+                <div key={category.category} className="card-luxury rounded-sm overflow-hidden">
+                  <button onClick={() => toggleCategory(category.category)} className="w-full px-6 py-4 flex justify-between items-center transition-colors" style={{ background: 'rgba(201,162,39,0.03)' }}>
+                    <span className="font-cinzel text-xs tracking-[0.2em] uppercase" style={{ color: '#F8F5F0' }}>{category.category}</span>
+                    {expandedCategory === category.category
+                      ? <ChevronUp size={16} style={{ color: '#C9A227' }} />
+                      : <ChevronDown size={16} style={{ color: 'rgba(248,245,240,0.3)' }} />}
                   </button>
-
                   {expandedCategory === category.category && (
-                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-white border-t border-gray-100">
+                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4" style={{ borderTop: '1px solid rgba(201,162,39,0.08)' }}>
                       {category.services.map(service => {
-                       const isDropdown = Array.isArray(service.options) && service.options.length > 0;
-                        const activeOptionId = isDropdown
-  ? (selectedOptions[service._id] || service.options?.[0]?._id)
-  : null;
-                        const activeOption = isDropdown
-  ? service.options?.find(opt => opt._id === activeOptionId)
-  : null;
-                          
-                        const priceToDisplay = isDropdown && activeOption
-  ? activeOption.price
-  : service.price;
-                        
-                        const cartItem = isDropdown 
+                        const isDropdown = Array.isArray(service.options) && service.options.length > 0;
+                        const activeOptionId = isDropdown ? (selectedOptions[service._id] || service.options?.[0]?._id) : null;
+                        const activeOption = isDropdown ? service.options?.find(opt => opt._id === activeOptionId) : null;
+                        const priceToDisplay = isDropdown && activeOption ? activeOption.price : service.price;
+                        const cartItem = isDropdown
                           ? { _id: activeOption._id, name: `${service.name} - ${activeOption.name}`, price: activeOption.price, category: category.category }
                           : { _id: service._id, name: service.name, price: service.price, category: category.category };
-
+                        const isAdded = cart.find(item => item._id === cartItem._id);
                         return (
-                          <div key={service._id} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow group flex flex-col justify-between">
+                          <div key={service._id} className="glass-dark p-5 rounded-sm flex flex-col justify-between">
                             <div>
-                              <div className="flex justify-between items-start mb-4">
+                              <div className="flex justify-between items-start mb-3">
                                 <div>
-                                  <span className="text-xs font-semibold text-gold-500 tracking-wider uppercase mb-1 block">{category.category}</span>
-                                  <h3 className="text-lg font-bold text-gray-900">{service.name}</h3>
+                                  <span className="font-cinzel text-[0.5rem] tracking-[0.2em] uppercase block mb-1" style={{ color: 'rgba(201,162,39,0.5)' }}>{category.category}</span>
+                                  <h3 className="font-playfair text-sm" style={{ color: '#F8F5F0' }}>{service.name}</h3>
                                 </div>
-                                <span className="text-xl font-serif text-black min-w-max ml-4">₹{priceToDisplay}</span>
+                                <span className="font-cinzel text-sm min-w-max ml-3" style={{ color: '#C9A227' }}>₹{priceToDisplay}</span>
                               </div>
-                              
-                              {isDropdown && service.options?.length > 0 && (
-                                <div className="mb-4">
-                                  <select 
-                                    value={activeOptionId}
-                                    onChange={(e) => handleOptionChange(service._id, e.target.value)}
-                                    className="w-full p-2.5 rounded-lg border border-gray-200 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none text-sm text-gray-700 bg-gray-50"
-                                  >
-                                    {service.options.map(opt => (
-                                      <option key={opt._id} value={opt._id}>
-                                        {opt.name} - ₹{opt.price}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
+                              {isDropdown && (
+                                <select value={activeOptionId} onChange={(e) => handleOptionChange(service._id, e.target.value)} className="w-full px-3 py-2 rounded-sm text-sm font-cormorant outline-none mb-3" style={{ background: 'rgba(201,162,39,0.06)', border: '1px solid rgba(201,162,39,0.15)', color: '#F8F5F0' }}>
+                                  {service.options.map(opt => (<option key={opt._id} value={opt._id} style={{ background: '#111' }}>{opt.name} — ₹{opt.price}</option>))}
+                                </select>
                               )}
                             </div>
-                            
-                            <button 
-                              onClick={() => addToCart(cartItem)}
-                              disabled={cart.find(item => item._id === cartItem._id)}
-                              className={`w-full py-2.5 rounded-lg flex items-center justify-center gap-2 transition-colors mt-auto ${
-                                cart.find(item => item._id === cartItem._id) 
-                                  ? 'bg-green-50 text-green-700 border border-green-200'
-                                  : 'bg-black text-white hover:bg-gold-500 hover:text-black'
-                              }`}
-                            >
-                              {cart.find(item => item._id === cartItem._id) ? (
-                                <><Check size={18} /> Added to Cart</>
-                              ) : (
-                                <><ShoppingCart size={18} /> Add to Cart</>
-                              )}
+                            <button onClick={() => addToCart(cartItem)} disabled={!!isAdded} className="w-full py-2 font-cinzel text-[0.6rem] tracking-[0.15em] uppercase flex items-center justify-center gap-2 mt-2 transition-all rounded-sm" style={{ border: `1px solid ${isAdded ? 'rgba(201,162,39,0.4)' : 'rgba(201,162,39,0.2)'}`, background: isAdded ? 'rgba(201,162,39,0.1)' : 'transparent', color: '#C9A227' }}>
+                              {isAdded ? (<><Check size={14} /> Added</>) : (<><ShoppingCart size={14} /> Add</>)}
                             </button>
                           </div>
                         );
@@ -447,98 +360,43 @@ const Services = () => {
           )}
         </div>
 
-        {/* Booking & Cart Sidebar */}
+        {/* Booking Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 sticky top-24">
-            <h2 className="text-2xl heading-luxury mb-6 border-b border-gray-100 pb-4">Your Booking</h2>
-            
-            {/* Date & Time Selection */}
-            <div className="space-y-4 mb-8">
+          <div className="glass-dark rounded-sm p-6 sticky top-24" style={{ border: '1px solid rgba(201,162,39,0.15)' }}>
+            <h2 className="font-cinzel text-sm tracking-[0.2em] uppercase mb-6 pb-4" style={{ color: '#F8F5F0', borderBottom: '1px solid rgba(201,162,39,0.1)' }}>Your Booking</h2>
+            <div className="flex flex-col gap-4 mb-8">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Select Date</label>
-                <div className="relative">
-                  <input 
-                    type="date" 
-                    value={bookingDate}
-                    onChange={(e) => setBookingDate(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none text-gray-700"
-                  />
-                  <Calendar className="absolute left-3 top-3 text-gold-500" size={18} />
-                </div>
+                <label className="block font-cinzel text-[0.55rem] tracking-[0.2em] uppercase mb-2" style={{ color: 'rgba(201,162,39,0.5)' }}>Date</label>
+                <div className="relative"><input type="date" value={bookingDate} onChange={(e) => setBookingDate(e.target.value)} className="input-luxury pl-10 rounded-sm text-sm" /><Calendar className="absolute left-3 top-3.5" size={16} style={{ color: '#C9A227' }} /></div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Select Time Slot</label>
-                <div className="relative">
-                  <input 
-                    type="time" 
-                    value={bookingTime}
-                    onChange={(e) => setBookingTime(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 outline-none text-gray-700"
-                  />
-                  <Clock className="absolute left-3 top-3 text-gold-500" size={18} />
-                </div>
+                <label className="block font-cinzel text-[0.55rem] tracking-[0.2em] uppercase mb-2" style={{ color: 'rgba(201,162,39,0.5)' }}>Time</label>
+                <div className="relative"><input type="time" value={bookingTime} onChange={(e) => setBookingTime(e.target.value)} className="input-luxury pl-10 rounded-sm text-sm" /><Clock className="absolute left-3 top-3.5" size={16} style={{ color: '#C9A227' }} /></div>
               </div>
             </div>
-
-            {/* Cart Items */}
-            <div className="mb-6">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3">Selected Services</h3>
-              {cart.length === 0 ? (
-                <p className="text-gray-500 text-sm italic text-center py-4 bg-gray-50 rounded-lg">No services selected.</p>
-              ) : (
-                <ul className="space-y-3">
-                  {cart.map(item => (
-                    <li key={item._id} className="flex justify-between items-center group text-sm">
-                      <div className="flex-1">
-                        <span className="block font-medium text-gray-900">{item.name}</span>
-                        <span className="text-gray-500">₹{item.price}</span>
-                      </div>
-                      <button onClick={() => removeFromCart(item._id)} className="text-gray-400 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Trash2 size={16} />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            {/* Bill Summary */}
+            <h3 className="font-cinzel text-[0.55rem] tracking-[0.2em] uppercase mb-3" style={{ color: 'rgba(201,162,39,0.5)' }}>Selected Services</h3>
+            {cart.length === 0 ? (
+              <p className="font-cormorant italic text-sm text-center py-4" style={{ color: 'rgba(248,245,240,0.3)' }}>No services selected.</p>
+            ) : (
+              <ul className="flex flex-col gap-3 mb-4">{cart.map(item => (
+                <li key={item._id} className="flex justify-between items-center group text-sm">
+                  <div className="flex-1 min-w-0"><span className="block font-cormorant truncate" style={{ color: '#F8F5F0' }}>{item.name}</span><span className="font-cinzel text-xs" style={{ color: 'rgba(201,162,39,0.6)' }}>₹{item.price}</span></div>
+                  <button onClick={() => removeFromCart(item._id)} className="p-1 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'rgba(248,245,240,0.3)' }}><Trash2 size={14} /></button>
+                </li>
+              ))}</ul>
+            )}
             {cart.length > 0 && (
-              <div className="border-t border-gray-100 pt-4 mb-6 space-y-2 text-sm">
-                <div className="flex justify-between text-gray-600">
-                  <span>Subtotal</span>
-                  <span>₹{subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>GST (18%)</span>
-                  <span>₹{gst.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t border-gray-100 mt-2">
-                  <span>Total</span>
-                  <span className="text-gold-500">₹{total.toFixed(2)}</span>
-                </div>
+              <div className="pt-4 mb-4 flex flex-col gap-2 text-sm" style={{ borderTop: '1px solid rgba(201,162,39,0.1)' }}>
+                <div className="flex justify-between font-cormorant" style={{ color: 'rgba(248,245,240,0.5)' }}><span>Subtotal</span><span>₹{subtotal.toFixed(2)}</span></div>
+                <div className="flex justify-between font-cormorant" style={{ color: 'rgba(248,245,240,0.5)' }}><span>GST (18%)</span><span>₹{gst.toFixed(2)}</span></div>
+                <div className="flex justify-between font-cinzel text-sm pt-2" style={{ borderTop: '1px solid rgba(201,162,39,0.08)', color: '#F8F5F0' }}><span>Total</span><span style={{ color: '#C9A227' }}>₹{total.toFixed(2)}</span></div>
               </div>
             )}
-
-            {/* WhatsApp Checkout Button */}
-            <button 
-              onClick={handleWhatsAppBooking}
-              disabled={cart.length === 0}
-              className={`w-full py-3.5 rounded-lg font-bold flex items-center justify-center gap-2 transition-all ${
-                cart.length > 0 
-                  ? 'bg-[#25D366] text-white hover:bg-[#20bd5a] shadow-md hover:shadow-lg' 
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              <MessageCircle size={20} />
-              Book via WhatsApp
+            <button onClick={handleProceedToPayment} disabled={cart.length === 0} className="w-full py-3 font-cinzel text-[0.65rem] tracking-[0.15em] uppercase flex items-center justify-center gap-2 transition-all rounded-sm" style={{ background: cart.length > 0 ? 'linear-gradient(135deg, #C9A227, #e8d17a)' : 'rgba(255,255,255,0.03)', color: cart.length > 0 ? '#000' : 'rgba(248,245,240,0.3)', cursor: cart.length > 0 ? 'pointer' : 'not-allowed', fontWeight: 700 }}>
+              Proceed to Payment
             </button>
-            <p className="text-xs text-center text-gray-500 mt-3">
-              You will be redirected to our WhatsApp Chatbot to receive your payment QR code.
-            </p>
           </div>
         </div>
-
       </div>
     </div>
   );

@@ -13,13 +13,13 @@ router.post('/seed', async (req, res) => {
       const hashedOwner = await bcrypt.hash('owner123', 10);
       await User.create({ username: 'owner', password: hashedOwner, role: 'owner' });
     }
-    
+
     const staffExists = await User.findOne({ role: 'staff' });
     if (!staffExists) {
       const hashedStaff = await bcrypt.hash('staff123', 10);
       await User.create({ username: 'staff', password: hashedStaff, role: 'staff' });
     }
-    
+
     res.json({ message: 'Users seeded (owner/owner123, staff/staff123)' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -30,7 +30,7 @@ router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     console.log(`[Auth] Attempting login for username: ${username}`);
-    
+
     // Find user strictly by username, irrespective of role
     const user = await User.findOne({ username });
     if (!user) {
@@ -46,8 +46,8 @@ router.post('/login', async (req, res) => {
 
     console.log(`[Auth] Login successful for username: ${username}`);
     const token = jwt.sign(
-      { id: user._id, role: user.role }, 
-      process.env.JWT_SECRET || 'fallback_secret', 
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || 'fallback_secret',
       { expiresIn: '1d' }
     );
 

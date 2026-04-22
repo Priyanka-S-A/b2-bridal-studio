@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { LogOut, LayoutDashboard, Scissors, Receipt } from 'lucide-react';
+import { LogOut, LayoutDashboard, Scissors, Receipt, CreditCard, TrendingUp } from 'lucide-react';
 import ManageServices from './ManageServices.jsx';
 import ViewBookings from './ViewBookings.jsx';
 import ManageProducts from './ManageProducts.jsx';
@@ -8,6 +8,8 @@ import ManageCourses from './ManageCourses';
 import ManageStock from '../ManageStock';
 import ManageStaff from '../ManageStaff';
 import Attendance from '../Attendance';
+import PaymentVerification from './PaymentVerification';
+import Revenue from './Revenue';
 
 
 const AdminDashboard = () => {
@@ -36,11 +38,12 @@ const navItems = user?.role === "owner"
   ? [
       { name: 'Staff', path: '/admin/staff', icon: LayoutDashboard },
       { name: 'Attendance', path: '/admin/attendance', icon: LayoutDashboard },
-      { name: 'Revenue', path: '/admin/revenue', icon: LayoutDashboard },
+      { name: 'Revenue', path: '/admin/revenue', icon: TrendingUp },
     ]
   : [
       { name: 'Services', path: '/admin/services', icon: Scissors },
       { name: 'Bookings', path: '/admin/bookings', icon: Receipt },
+      { name: 'Payments', path: '/admin/payments', icon: CreditCard },
       { name: 'Products', path: '/admin/products', icon: LayoutDashboard },
       { name: 'Courses', path: '/admin/courses', icon: LayoutDashboard },
       { name: 'Stock', path: '/admin/stock', icon: LayoutDashboard },
@@ -101,11 +104,13 @@ const navItems = user?.role === "owner"
             <Route path="/" element={<div className="p-8 text-center text-gray-500">Select an option from the menu.</div>} />
             <Route path="services" element={<ManageServices />} />
             <Route path="bookings" element={<ViewBookings />} />
+            <Route path="payments" element={<PaymentVerification />} />
             <Route path="products" element={<ManageProducts />} />
             <Route path="courses" element={<ManageCourses />} />
             <Route path="stock" element={<ManageStock />} />
             <Route path="staff" element={<ManageStaff />} />
             <Route path="attendance" element={<Attendance />} />
+            <Route path="revenue" element={<Revenue />} />
           </Routes>
         </main>
       </div>
