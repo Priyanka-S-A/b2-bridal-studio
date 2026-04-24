@@ -1,26 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { TrendingUp, Wifi, WifiOff, ExternalLink } from 'lucide-react';
 
 const API = 'http://localhost:5000';
 
 const Revenue = () => {
-  const [bills, setBills] = useState([]);
+  const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ total: 0, chennai: 0, madurai: 0 });
+  const [stats, setStats] = useState({ total: 0, online: 0, offline: 0, count: 0 });
+  const [filter, setFilter] = useState('all'); // 'all' | 'online' | 'offline'
 
   useEffect(() => {
     const fetchRevenue = async () => {
       try {
-        // Get all bookings that are Successful (they have bills)
-        const res = await axios.get(`${API}/api/bookings`);
-        const successful = res.data.filter(b => b.status === 'Successful');
-        
-        const totalRevenue = successful.reduce((sum, b) => sum + b.total, 0);
-        const chennai = successful.filter(b => b.branch === 'Chennai').reduce((sum, b) => sum + b.total, 0);
-        const madurai = successful.filter(b => b.branch === 'Madurai').reduce((sum, b) => sum + b.total, 0);
-        
-        setBills(successful);
-        setStats({ total: totalRevenue, chennai, madurai });
+        const token = localStorage.getItem('adminToken');
+        const [entriesRes, statsRes] = await Promise.all([
+          axios.get(`${API}/api/revenue`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${API}/api/revenue/stats`, { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
+        setEntries(entriesRes.data);
+        setStats(statsRes.data);
       } catch (err) {
         console.error('Failed to fetch revenue', err);
       } finally {
@@ -30,29 +29,64 @@ const Revenue = () => {
     fetchRevenue();
   }, []);
 
-  if (loading) return <div className="text-center py-10">Loading revenue data...</div>;
+  const filtered = filter === 'all' ? entries : entries.filter(e => e.source === filter);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-2 border-gray-200 border-t-amber-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-900 heading-luxury mb-6">Revenue Dashboard</h2>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Total Revenue</div>
-          <div className="text-3xl font-bold text-gray-900">₹{stats.total.toLocaleString()}</div>
-          <div className="text-xs text-gray-400 mt-1">{bills.length} successful bookings</div>
+          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Total Revenue</div>
+          <div className="text-3xl font-bold text-gray-900">₹{stats.total?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+          <div className="text-xs text-gray-400 mt-1">{stats.count} bills generated</div>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Chennai Branch</div>
-          <div className="text-3xl font-bold text-gray-900">₹{stats.chennai.toLocaleString()}</div>
-          <div className="text-xs text-gray-400 mt-1">{bills.filter(b => b.branch === 'Chennai').length} bookings</div>
+          <div className="flex items-center gap-1.5 mb-1">
+            <Wifi size={12} className="text-blue-400" />
+            <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Online</div>
+          </div>
+          <div className="text-3xl font-bold text-blue-600">₹{stats.online?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+          <div className="text-xs text-gray-400 mt-1">{entries.filter(e => e.source === 'online').length} booking bills</div>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Madurai Branch</div>
-          <div className="text-3xl font-bold text-gray-900">₹{stats.madurai.toLocaleString()}</div>
-          <div className="text-xs text-gray-400 mt-1">{bills.filter(b => b.branch === 'Madurai').length} bookings</div>
+          <div className="flex items-center gap-1.5 mb-1">
+            <WifiOff size={12} className="text-amber-500" />
+            <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Offline</div>
+          </div>
+          <div className="text-3xl font-bold text-amber-600">₹{stats.offline?.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</div>
+          <div className="text-xs text-gray-400 mt-1">{entries.filter(e => e.source === 'offline').length} walk-in bills</div>
         </div>
+      </div>
+
+      {/* Filter tabs */}
+      <div className="flex gap-2 mb-4">
+        {[
+          { key: 'all', label: 'All' },
+          { key: 'online', label: 'Online' },
+          { key: 'offline', label: 'Offline' },
+        ].map(f => (
+          <button
+            key={f.key}
+            onClick={() => setFilter(f.key)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+              filter === f.key
+                ? 'bg-black text-amber-400'
+                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
       </div>
 
       {/* Revenue Table */}
@@ -63,47 +97,66 @@ const Revenue = () => {
               <tr className="bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                 <th className="p-4 pl-6">Date</th>
                 <th className="p-4">Customer</th>
-                <th className="p-4">Branch</th>
+                <th className="p-4">Source</th>
                 <th className="p-4">Mode</th>
                 <th className="p-4">Total</th>
                 <th className="p-4 pr-6">Bill</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {bills.length === 0 ? (
-                <tr><td colSpan="6" className="p-8 text-center text-gray-500">No revenue data yet. Revenue is added when bookings are accepted.</td></tr>
-              ) : bills.map(b => (
-                <tr key={b._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="p-4 pl-6 text-sm text-gray-600">
-                    {new Date(b.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                  </td>
-                  <td className="p-4">
-                    <div className="font-medium text-gray-900">{b.name}</div>
-                    <div className="text-xs text-gray-400">{b.phone}</div>
-                  </td>
-                  <td className="p-4">
-                    <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">{b.branch}</span>
-                  </td>
-                  <td className="p-4 text-sm text-gray-600">UPI</td>
-                  <td className="p-4">
-                    <span className="font-bold text-gray-900">₹{b.total.toFixed(2)}</span>
-                  </td>
-                  <td className="p-4 pr-6">
-                    {b.billId ? (
-                      <a
-                        href={`/bill/${b.billId}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-3 py-1.5 bg-black text-gold-500 text-xs font-semibold rounded-lg hover:bg-gray-800 transition-colors inline-block"
-                      >
-                        View Bill
-                      </a>
-                    ) : (
-                      <span className="text-xs text-gray-400">—</span>
-                    )}
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="p-10 text-center text-gray-400 text-sm">
+                    {entries.length === 0
+                      ? 'No revenue yet. Revenue is recorded when bills are generated.'
+                      : 'No entries match this filter.'}
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map(entry => (
+                  <tr key={entry._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="p-4 pl-6 text-sm text-gray-600">
+                      {new Date(entry.date).toLocaleDateString('en-IN', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                      })}
+                    </td>
+                    <td className="p-4">
+                      <div className="font-medium text-gray-900 text-sm">{entry.customer}</div>
+                      {entry.branch && <div className="text-xs text-gray-400">{entry.branch}</div>}
+                    </td>
+                    <td className="p-4">
+                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                        entry.source === 'online'
+                          ? 'bg-blue-50 text-blue-600'
+                          : 'bg-amber-50 text-amber-600'
+                      }`}>
+                        {entry.source === 'online' ? <Wifi size={10} /> : <WifiOff size={10} />}
+                        {entry.source}
+                      </span>
+                    </td>
+                    <td className="p-4 text-sm text-gray-600">{entry.mode || '—'}</td>
+                    <td className="p-4">
+                      <span className="font-bold text-gray-900">
+                        ₹{Number(entry.total).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      </span>
+                    </td>
+                    <td className="p-4 pr-6">
+                      {entry.billId ? (
+                        <a
+                          href={`/bill/${entry.billId?._id || entry.billId}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-black text-amber-400 text-xs font-semibold rounded-lg hover:bg-gray-800 transition-colors"
+                        >
+                          <ExternalLink size={12} /> View
+                        </a>
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

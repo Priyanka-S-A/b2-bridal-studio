@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const Booking = require('../models/Booking');
 const Bill = require('../models/Bill');
+const Revenue = require('../models/Revenue');
 
 // Multer config for payment proof uploads
 const storage = multer.diskStorage({
@@ -97,6 +98,17 @@ router.patch('/:id/accept', async (req, res) => {
       }
     });
     await bill.save();
+
+    // Insert into unified Revenue collection (source: online)
+    await Revenue.create({
+      date: new Date(),
+      customer: booking.name || 'Customer',
+      mode: 'UPI',
+      total: booking.total,
+      source: 'online',
+      billId: bill._id,
+      branch: booking.branch || ''
+    });
 
     booking.billId = bill._id;
     await booking.save();

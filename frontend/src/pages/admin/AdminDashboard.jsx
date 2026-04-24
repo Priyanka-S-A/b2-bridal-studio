@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { LogOut, LayoutDashboard, Scissors, Receipt, CreditCard, TrendingUp } from 'lucide-react';
+import { LogOut, LayoutDashboard, Scissors, Receipt, CreditCard, TrendingUp, FileText } from 'lucide-react';
 import ManageServices from './ManageServices.jsx';
 import ViewBookings from './ViewBookings.jsx';
 import ManageProducts from './ManageProducts.jsx';
@@ -10,6 +10,7 @@ import ManageStaff from '../ManageStaff';
 import Attendance from '../Attendance';
 import PaymentVerification from './PaymentVerification';
 import Revenue from './Revenue';
+import Billing from './Billing';
 
 
 const AdminDashboard = () => {
@@ -47,6 +48,7 @@ const navItems = user?.role === "owner"
       { name: 'Products', path: '/admin/products', icon: LayoutDashboard },
       { name: 'Courses', path: '/admin/courses', icon: LayoutDashboard },
       { name: 'Stock', path: '/admin/stock', icon: LayoutDashboard },
+      { name: 'Billing', path: '/admin/billing', icon: FileText },
     ];
 
   return (
@@ -111,6 +113,7 @@ const navItems = user?.role === "owner"
             <Route path="staff" element={<ManageStaff />} />
             <Route path="attendance" element={<Attendance />} />
             <Route path="revenue" element={<Revenue />} />
+            <Route path="billing" element={<Billing />} />
           </Routes>
         </main>
       </div>

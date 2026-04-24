@@ -12,7 +12,7 @@ const BillView = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API}/api/bookings/bill/${id}`)
+    fetch(`${API}/api/billing/${id}`)
       .then(r => r.json())
       .then(setBill)
       .catch(console.error)
@@ -174,12 +174,16 @@ const BillView = () => {
 
             {/* Totals */}
             <div className="px-6 py-5" style={{ background: 'rgba(201,162,39,0.03)', borderTop: '1px solid rgba(201,162,39,0.1)' }}>
-              <div className="flex justify-between mb-2 font-cormorant text-sm" style={{ color: 'rgba(248,245,240,0.5)' }}>
-                <span>Subtotal</span><span>₹{bill.subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between mb-3 font-cormorant text-sm" style={{ color: 'rgba(248,245,240,0.5)' }}>
-                <span>GST (18%)</span><span>₹{bill.gst.toFixed(2)}</span>
-              </div>
+              {bill.source !== 'offline' && bill.subtotal > 0 && (
+                <>
+                  <div className="flex justify-between mb-2 font-cormorant text-sm" style={{ color: 'rgba(248,245,240,0.5)' }}>
+                    <span>Subtotal</span><span>₹{(bill.subtotal || 0).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between mb-3 font-cormorant text-sm" style={{ color: 'rgba(248,245,240,0.5)' }}>
+                    <span>GST (18%)</span><span>₹{(bill.gst || 0).toFixed(2)}</span>
+                  </div>
+                </>
+              )}
               <div className="flex justify-between font-cinzel text-lg pt-3" style={{ borderTop: '1px solid rgba(201,162,39,0.12)', color: '#F8F5F0' }}>
                 <span>Total</span><span style={{ color: '#C9A227' }}>₹{bill.total.toFixed(2)}</span>
               </div>
@@ -188,9 +192,18 @@ const BillView = () => {
             {/* Footer */}
             <div className="p-6 text-center" style={{ borderTop: '1px solid rgba(201,162,39,0.06)' }}>
               <p className="font-cormorant italic text-sm mb-4" style={{ color: 'rgba(248,245,240,0.35)' }}>Thank you for choosing B2 Bridal Studio</p>
-              <button onClick={generatePDF} className="btn-gold py-3 px-8 text-xs">
-                Download PDF
-              </button>
+              <div className="flex gap-3 justify-center flex-wrap">
+                <button onClick={generatePDF} className="btn-gold py-3 px-8 text-xs">
+                  Download PDF
+                </button>
+                <button
+                  onClick={() => window.print()}
+                  className="py-3 px-8 text-xs font-semibold rounded"
+                  style={{ border: '1px solid rgba(201,162,39,0.3)', color: 'rgba(201,162,39,0.7)', background: 'transparent' }}
+                >
+                  Print
+                </button>
+              </div>
             </div>
           </div>
         </motion.div>
